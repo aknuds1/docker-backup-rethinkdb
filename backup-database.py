@@ -34,7 +34,7 @@ _logger = logging.getLogger()
 def _prune_old(bucket):
     """Prune old backups."""
     _logger.info('Pruning old backups...')
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     for blob in bucket.list_blobs(prefix='rethinkdb/'):
         time_diff = now - blob.updated.replace(tzinfo=timezone.utc)
         if time_diff.days > 30:
