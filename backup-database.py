@@ -38,13 +38,13 @@ def _prune_old(bucket):
     for blob in bucket.list_blobs(prefix='rethinkdb/'):
         time_diff = now - blob.updated.replace(tzinfo=timezone.utc)
         if time_diff.days > 30:
-            logger.debug(
+            _logger.debug(
                 'Deleting blob {}, since it\'s more than 30 days old'.format(
                     blob.path)
             )
             blob.delete()
         else:
-            logger.debug(
+            _logger.debug(
                 'Not deleting blob {}, since it\'s only {} day(s) old'.format(
                     blob.path, time_diff.days)
             )
