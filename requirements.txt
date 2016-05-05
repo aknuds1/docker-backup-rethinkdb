@@ -1,3 +1,4 @@
 python-daemon
 gcloud
 oauth2client
+rethinkdb
