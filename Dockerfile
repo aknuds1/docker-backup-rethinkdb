@@ -6,7 +6,7 @@ ENTRYPOINT ["python3", "backup-database.py"]
 
 RUN \
   apt-get update && \
-  apt-get install -y python3 python-pip3 && \
+  apt-get install -y python3 python3-pip && \
   rm -rf /var/lib/apt/lists/*
 
 COPY ./ .
