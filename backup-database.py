@@ -31,7 +31,27 @@ logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
 _logger = logging.getLogger()
 
 
+def _prune_old(bucket):
+    """Prune old backups."""
+    _logger.info('Pruning old backups...')
+    now = datetime.utcnow()
+    for blob in bucket.list_blobs(prefix='rethinkdb/'):
+        time_diff = now - blob.updated
+        if time_diff.days > 30:
+            logger.debug(
+                'Deleting blob {}, since it\'s more than 30 days old'.format(
+                    blob.path)
+            )
+            blob.delete()
+        else:
+            logger.debug(
+                'Not deleting blob {}, since it\'s only {} day(s) old'.format(
+                    blob.path, time_diff.days)
+            )
+
+
 def _do_backup():
+    """Perform backup."""
     _logger.info('Backing up...')
     subprocess.check_call([
         'rethinkdb', 'dump', '-q', '-c', args.host, '-f', args.file,
@@ -58,6 +78,8 @@ def _do_backup():
     blob = bucket.blob(storage_filename)
     blob.upload_from_filename(args.file)
     _logger.info('Successfully uploaded archive!')
+
+    _prune_old(bucket)
 
     delay = 60*60*24
     _logger.info(
