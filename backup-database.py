@@ -6,7 +6,7 @@ import contextlib
 import logging
 import subprocess
 import os.path
-from datetime import datetime
+from datetime import datetime, timezone
 import argparse
 import daemon
 from oauth2client.service_account import ServiceAccountCredentials
@@ -36,7 +36,7 @@ def _prune_old(bucket):
     _logger.info('Pruning old backups...')
     now = datetime.utcnow()
     for blob in bucket.list_blobs(prefix='rethinkdb/'):
-        time_diff = now - blob.updated
+        time_diff = now - blob.updated.replace(tzinfo=timezone.utc)
         if time_diff.days > 30:
             logger.debug(
                 'Deleting blob {}, since it\'s more than 30 days old'.format(
