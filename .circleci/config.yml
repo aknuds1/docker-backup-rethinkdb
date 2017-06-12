@@ -1,0 +1,22 @@
+version: 2
+jobs:
+  build:
+    docker:
+    - image: docker
+    working_directory: ~/build
+    steps:
+    - checkout
+    - setup_remote_docker
+    - run:
+        name: Build Docker image
+        command: |
+          TAG=v1.1.0
+          docker build -t quay.io/aknuds1/backup-rethinkdb:$TAG .
+    - deploy:
+        name: Push Docker image
+        command: |
+          TAG=v1.1.0
+          if [ "${CIRCLE_BRANCH}" == "release" ]; then
+            docker login -u $QUAY_USER -p $QUAY_PASSWORD quay.io
+            docker push quay.io/aknuds1/backup-rethinkdb:$TAG
+          fi
