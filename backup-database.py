@@ -9,8 +9,8 @@ import os.path
 from datetime import datetime, timezone
 import argparse
 import daemon
-from oauth2client.service_account import ServiceAccountCredentials
-from gcloud import storage
+from google.oauth2 import service_account
+from google.cloud import storage
 
 
 _root_dir = os.path.abspath(os.path.dirname(__file__))
@@ -58,17 +58,15 @@ def _do_backup():
         '--overwrite-file',
     ])
 
-    credentials_dict = {
-        'type': 'service_account',
-        'client_id': os.environ['BACKUP_CLIENT_ID'],
+    credentials = service_account.from_json_keyfile_dict({
         'client_email': os.environ['BACKUP_CLIENT_EMAIL'],
         'private_key_id': os.environ['BACKUP_PRIVATE_KEY_ID'],
         'private_key': os.environ['BACKUP_PRIVATE_KEY'],
-    }
-    credentials = ServiceAccountCredentials.from_json_keyfile_dict(
-        credentials_dict
+        'token_uri': 'https://accounts.google.com/o/oauth2/token',
+    })
+    client = storage.Client(
+        project=args.project_id, credentials=credentials
     )
-    client = storage.Client(credentials=credentials, project=args.project_id)
     date_str = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
     storage_filename = 'rethinkdb/rethinkdb-dump-{}.tar.gz'.format(date_str)
     _logger.info(
@@ -81,9 +79,9 @@ def _do_backup():
 
     _prune_old(bucket)
 
-    delay = 60*60*24
+    delay = 60 * 60 * 24
     _logger.info(
-        'Scheduling next backup in {} hours...'.format(int(delay/(60*60))))
+        'Scheduling next backup in {} hours...'.format(int(delay / (60 * 60))))
     loop.call_later(delay, _do_backup)
 
 
