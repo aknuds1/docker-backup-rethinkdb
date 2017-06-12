@@ -58,7 +58,7 @@ def _do_backup():
         '--overwrite-file',
     ])
 
-    credentials = service_account.from_json_keyfile_dict({
+    credentials = service_account.Credentials.from_service_account_info({
         'client_email': os.environ['BACKUP_CLIENT_EMAIL'],
         'private_key_id': os.environ['BACKUP_PRIVATE_KEY_ID'],
         'private_key': os.environ['BACKUP_PRIVATE_KEY'],
