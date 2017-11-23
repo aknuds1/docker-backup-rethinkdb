@@ -65,8 +65,17 @@ def _do_backup():
     if args.tls_ca:
         cmd.extend(['--tls-cert', args.tls_ca, ])
     if password:
-        cmd.extend(['--password', password, ])
-    subprocess.check_call(cmd)
+        password_fpath = '/tmp/rethinkdb-password.txt'
+        with open(password_fpath, 'wt') as f:
+            f.write(password)
+        cmd.extend(['--password-file', password_fpath, ])
+    else:
+        password_fpath = None
+    try:
+        subprocess.check_call(cmd)
+    finally:
+        if password_fpath:
+            os.remove(password_fpath)
 
     credentials = service_account.Credentials.from_service_account_info({
         'client_email': os.environ['BACKUP_CLIENT_EMAIL'],
