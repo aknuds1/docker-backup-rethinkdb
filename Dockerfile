@@ -9,5 +9,8 @@ RUN \
   apt-get install -y python3 python3-pip && \
   rm -rf /var/lib/apt/lists/*
 
-COPY ./ .
+# Cache dependencies
+COPY requirements.txt .
 RUN pip3 install -U -r requirements.txt
+
+COPY ./ .
