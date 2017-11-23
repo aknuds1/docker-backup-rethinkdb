@@ -1,4 +1,4 @@
-FROM rethinkdb:2.3
+FROM rethinkdb:2.3.6
 MAINTAINER Arve Knudsen <arve.knudsen@gmail.com>
 
 WORKDIR /app

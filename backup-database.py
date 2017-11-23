@@ -24,6 +24,9 @@ cl_parser.add_argument(
     '--bucket', help='Google Cloud Storage bucket name')
 cl_parser.add_argument(
     '--project_id', help='Google Cloud project ID')
+cl_parser.add_argument(
+    '--tls_ca', default=None, help='RethinkDB CA certificate path'
+)
 args = cl_parser.parse_args()
 
 
@@ -37,10 +40,11 @@ def _prune_old(bucket):
     now = datetime.now(timezone.utc)
     for blob in bucket.list_blobs(prefix='rethinkdb/'):
         time_diff = now - blob.updated.replace(tzinfo=timezone.utc)
-        if time_diff.days > 30:
+        limit = 100
+        if time_diff.days > limit:
             _logger.debug(
-                'Deleting blob {}, since it\'s more than 30 days old'.format(
-                    blob.path)
+                'Deleting blob {}, since it\'s more than {} days old'.format(
+                    blob.path, limit)
             )
             blob.delete()
         else:
@@ -53,10 +57,13 @@ def _prune_old(bucket):
 def _do_backup():
     """Perform backup."""
     _logger.info('Backing up...')
-    subprocess.check_call([
+    cmd = [
         'rethinkdb', 'dump', '-q', '-c', args.host, '-f', args.file,
         '--overwrite-file',
-    ])
+    ]
+    if args.tls_ca:
+        cmd.append('--tls-cert', args.tls_ca)
+    subprocess.check_call(cmd)
 
     credentials = service_account.Credentials.from_service_account_info({
         'client_email': os.environ['BACKUP_CLIENT_EMAIL'],
