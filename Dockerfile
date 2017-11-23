@@ -10,4 +10,4 @@ RUN \
   rm -rf /var/lib/apt/lists/*
 
 COPY ./ .
-RUN pip3 install -r requirements.txt
+RUN pip3 install -U -r requirements.txt

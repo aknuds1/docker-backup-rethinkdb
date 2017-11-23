@@ -10,12 +10,12 @@ jobs:
     - run:
         name: Build Docker image
         command: |
-          TAG=v1.2.0
+          TAG=v1.2.1
           docker build -t quay.io/aknuds1/backup-rethinkdb:$TAG .
     - deploy:
         name: Push Docker image
         command: |
-          TAG=v1.2.0
+          TAG=v1.2.1
           if [ "${CIRCLE_BRANCH}" == "release" ]; then
             docker login -u $QUAY_USER -p $QUAY_PASSWORD quay.io
             docker push quay.io/aknuds1/backup-rethinkdb:$TAG
