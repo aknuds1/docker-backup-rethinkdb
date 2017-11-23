@@ -57,12 +57,15 @@ def _prune_old(bucket):
 def _do_backup():
     """Perform backup."""
     _logger.info('Backing up...')
+    password = os.environ.get('BACKUP_PASSWORD')
     cmd = [
         'rethinkdb', 'dump', '-q', '-c', args.host, '-f', args.file,
         '--overwrite-file',
     ]
     if args.tls_ca:
         cmd.append('--tls-cert', args.tls_ca)
+    if password:
+        cmd.append('--password', password)
     subprocess.check_call(cmd)
 
     credentials = service_account.Credentials.from_service_account_info({
