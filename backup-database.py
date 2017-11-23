@@ -63,9 +63,9 @@ def _do_backup():
         '--overwrite-file',
     ]
     if args.tls_ca:
-        cmd.append('--tls-cert', args.tls_ca)
+        cmd.extend(['--tls-cert', args.tls_ca, ])
     if password:
-        cmd.append('--password', password)
+        cmd.extend(['--password', password, ])
     subprocess.check_call(cmd)
 
     credentials = service_account.Credentials.from_service_account_info({
