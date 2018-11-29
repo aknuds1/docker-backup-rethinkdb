@@ -11,6 +11,8 @@ RUN \
 
 # Cache dependencies
 COPY requirements.txt .
+# python-daemon requires docutils, but the dependency isn't picked up by pip
+RUn pip3 install -U docutils
 RUN pip3 install -U -r requirements.txt
 
 COPY ./ .
