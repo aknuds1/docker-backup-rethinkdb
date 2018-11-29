@@ -77,12 +77,9 @@ def _do_backup():
         if password_fpath:
             os.remove(password_fpath)
 
-    credentials = service_account.Credentials.from_service_account_info({
-        'client_email': os.environ['BACKUP_CLIENT_EMAIL'],
-        'private_key_id': os.environ['BACKUP_PRIVATE_KEY_ID'],
-        'private_key': os.environ['BACKUP_PRIVATE_KEY'],
-        'token_uri': 'https://accounts.google.com/o/oauth2/token',
-    })
+    credentials = service_account.Credentials.from_service_account_file(
+        '/etc/rethinkdb-backup/key.json'
+    )
     client = storage.Client(
         project=args.project_id, credentials=credentials
     )
