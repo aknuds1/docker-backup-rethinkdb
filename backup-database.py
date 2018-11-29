@@ -36,22 +36,22 @@ _logger = logging.getLogger()
 
 def _prune_old(bucket):
     """Prune old backups."""
+    def get_key(blob):
+        return blob.updated
+
     _logger.info('Pruning old backups...')
-    now = datetime.now(timezone.utc)
-    for blob in bucket.list_blobs(prefix='rethinkdb/'):
-        time_diff = now - blob.updated.replace(tzinfo=timezone.utc)
-        limit = 100
-        if time_diff.days > limit:
-            _logger.debug(
-                'Deleting blob {}, since it\'s more than {} days old'.format(
-                    blob.path, limit)
-            )
-            blob.delete()
-        else:
-            _logger.debug(
-                'Not deleting blob {}, since it\'s only {} day(s) old'.format(
-                    blob.path, time_diff.days)
-            )
+    # Keep a certain amount of newest backups
+    limit = 100
+    sorted_blobs = sorted(
+        bucket.list_blobs(prefix='rethinkdb/'), key=get_key, reverse=True
+    )
+    prunable_blobs = sorted_blobs[100:]
+    for blob in prunable_blobs:
+        _logger.debug(
+            'Deleting blob {}, since we\'ve got more than {} backups'.format(
+                blob.path, limit)
+        )
+        blob.delete()
 
 
 def _do_backup():
