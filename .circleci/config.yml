@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-    - image: docker
+    - image: docker:git
     working_directory: ~/build
     steps:
     - checkout
