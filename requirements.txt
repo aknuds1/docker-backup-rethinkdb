@@ -2,3 +2,5 @@ python-daemon
 google-cloud-storage
 google-auth
 rethinkdb
+
+rsa>=4.1 # not directly required, pinned by Snyk to avoid a vulnerability
