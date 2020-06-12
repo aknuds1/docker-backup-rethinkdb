@@ -1,8 +1,8 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
-      - image: docker:git
+      - image: cimg/base:stable
     working_directory: ~/build
     steps:
       - checkout
