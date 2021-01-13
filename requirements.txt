@@ -3,4 +3,4 @@ google-cloud-storage
 google-auth
 rethinkdb
 
-rsa>=4.1 # not directly required, pinned by Snyk to avoid a vulnerability
+rsa>=4.7 # not directly required, pinned by Snyk to avoid a vulnerability
